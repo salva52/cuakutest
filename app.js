@@ -1,6 +1,6 @@
 document.getElementById('generateButton').addEventListener('click', () => {
     const url = document.getElementById('urlInput').value;
-    fetch('http://127.0.0.1:5000/generate-quiz', { // Asegúrate de que la URL esté correcta
+    fetch('/generate-quiz', { // La URL coincide con la ruta definida en Flask
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
