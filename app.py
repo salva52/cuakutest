@@ -1,15 +1,14 @@
 from flask import Flask, request, jsonify, send_from_directory
 import requests
 from bs4 import BeautifulSoup
-import openai
+from openai import OpenAI
 from flask_cors import CORS
 import os
 
 app = Flask(__name__, static_folder='', static_url_path='')
 CORS(app)
 
-# Configura tu API key de OpenAI
-openai.api_key = os.getenv('OPENAI_API_KEY')
+client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
 
 @app.route('/')
 def serve_index():
@@ -25,7 +24,7 @@ def generate_quiz():
     text = ' '.join([para.get_text() for para in paragraphs])
 
     # Usar la nueva API de OpenAI para resumir el texto
-    response = openai.Completion.create(
+    response = client.completions.create(
         model="text-davinci-003",
         prompt=f"Resume el siguiente texto:\n\n{text}",
         max_tokens=100
@@ -33,7 +32,7 @@ def generate_quiz():
     summary = response.choices[0].text.strip()
 
     # Usar la nueva API de OpenAI para generar preguntas
-    response = openai.Completion.create(
+    response = client.completions.create(
         model="text-davinci-003",
         prompt=f"Genera preguntas de opción múltiple basadas en el siguiente texto:\n\n{summary}",
         max_tokens=200
