@@ -1,14 +1,19 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 import requests
 from bs4 import BeautifulSoup
 import openai
 from flask_cors import CORS
+import os
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='', static_url_path='')
 CORS(app)
 
 # Configura tu API key de OpenAI
-openai.api_key = 'TU_API_KEY_DE_OPENAI'
+openai.api_key = os.getenv('OPENAI_API_KEY')
+
+@app.route('/')
+def serve_index():
+    return send_from_directory('.', 'index.html')
 
 @app.route('/generate-quiz', methods=['POST'])
 def generate_quiz():
