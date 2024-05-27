@@ -25,19 +25,21 @@ def generate_quiz():
 
     # Usar la nueva API de OpenAI para resumir el texto
     response = client.completions.create(
-        model="text-davinci-003",
-        prompt=f"Resume el siguiente texto:\n\n{text}",
+        model="gpt-3.5-turbo",
+        messages=[{"role": "system", "content": "You are a helpful assistant."},
+                  {"role": "user", "content": f"Resume el siguiente texto:\n\n{text}"}],
         max_tokens=100
     )
-    summary = response.choices[0].text.strip()
+    summary = response.choices[0].message["content"].strip()
 
     # Usar la nueva API de OpenAI para generar preguntas
     response = client.completions.create(
-        model="text-davinci-003",
-        prompt=f"Genera preguntas de opción múltiple basadas en el siguiente texto:\n\n{summary}",
+        model="gpt-3.5-turbo",
+        messages=[{"role": "system", "content": "You are a helpful assistant."},
+                  {"role": "user", "content": f"Genera preguntas de opción múltiple basadas en el siguiente texto:\n\n{summary}"}],
         max_tokens=200
     )
-    questions = response.choices[0].text.strip().split('\n')
+    questions = response.choices[0].message["content"].strip().split('\n')
 
     return jsonify({'questions': [q for q in questions if q.strip()]})
 
