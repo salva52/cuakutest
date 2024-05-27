@@ -24,20 +24,23 @@ def generate_quiz():
     paragraphs = soup.find_all('p')
     text = ' '.join([para.get_text() for para in paragraphs])
 
-    summary = openai.Completion.create(
-        engine="davinci",
+    # Usar la nueva API de OpenAI para resumir el texto
+    response = openai.Completion.create(
+        model="text-davinci-003",
         prompt=f"Resume el siguiente texto:\n\n{text}",
         max_tokens=100
     )
+    summary = response.choices[0].text.strip()
 
-    questions = openai.Completion.create(
-        engine="davinci",
-        prompt=f"Genera preguntas de opción múltiple basadas en el siguiente texto:\n\n{summary['choices'][0]['text']}",
+    # Usar la nueva API de OpenAI para generar preguntas
+    response = openai.Completion.create(
+        model="text-davinci-003",
+        prompt=f"Genera preguntas de opción múltiple basadas en el siguiente texto:\n\n{summary}",
         max_tokens=200
     )
+    questions = response.choices[0].text.strip().split('\n')
 
-    questions_list = questions['choices'][0]['text'].split('\n')
-    return jsonify({'questions': [q for q in questions_list if q.strip()]})
+    return jsonify({'questions': [q for q in questions if q.strip()]})
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)
